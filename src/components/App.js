@@ -1,39 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import "../styles/App.css";
+import React, { useState, useEffect } from "react";
 
-const KeyboardApp = () => {
-  const [previewText, setPreviewText] = useState('');
-  const [quote, setQuote] = useState('');
+const keys = "abcdefghijklmnopqrstuvwxyz0123456789 ".split("");
 
-  useEffect(() => {
-    if (previewText.toLowerCase() === 'forty two') {
-      fetchQuote();
-    } else {
-      setQuote('');
+const App = () => {
+  const [input,setInput] = useState("");
+  const [quote,setQuote] = useState("");
+
+  useEffect(()=>{
+    if (input === "forty two") {
+      fetch("https://api.quotable.io/random")
+      .then(res=>res.json())
+      .then(data=>setQuote(data.content))
+    }else{
+      setQuote("");
     }
-  }, [previewText]);
-
-  const fetchQuote = () => {
-    fetch('https://api.quotable.io/random')
-      .then(response => response.json())
-      .then(data => setQuote(data.content));
-  };
-
-  const handleKeyPress = (keyValue) => {
-    setPreviewText(prevText => prevText + keyValue);
-  };
+  },[input])
 
   return (
-    <div>
-      <div className="preview">{previewText}</div>
-      {quote && <div className="quote">{quote}</div>}
-      <div className="keyboard">
-        <button id="key-a" onClick={() => handleKeyPress('a')}>A</button>
-        <button id="key-b" onClick={() => handleKeyPress('b')}>B</button>
-        {/* Add other keys for all letters and alphabets */}
-        <button id="key-space" onClick={() => handleKeyPress(' ')}>Space</button>
+    <div className="keyboard">
+      <div className="preview">{input}</div>
+      {!!quote && <div className="quote">{quote}</div>}
+      <div>
+        {keys.map((key) => (
+          <button key={key} id={key === " " ? `key-space` : `key-${key}`} onClick={()=>{setInput(prev=>prev + key)}}>
+            {key === " " ? "Space" : key.toUpperCase()}
+          </button>
+        ))}
       </div>
     </div>
   );
 };
 
-export default KeyboardApp;
+export default App;
